@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SafetyDrive AI Co-Pilot</title>
+<style>
+body { font-family: Arial; background: #0a0a0a; color: white; margin: 0; padding: 15px; }
+#video { width: 100%; border-radius: 15px; border: 3px solid #00ff88; }
+#chat { height: 200px; overflow-y: scroll; background: #111; padding: 10px; border-radius: 10px; margin: 10px 0; }
+.msg { margin: 8px 0; padding: 8px; border-radius: 8px; }
+.user { background: #00ff88; color: black; text-align: right; }
+.ai { background: #222; color: #00ff88; text-align: left; }
+input, button, select { padding: 12px; margin: 5px; border-radius: 8px; border: none; font-size: 16px; }
+input { width: 60%; background: #222; color: white; }
+button { background: #00ff88; color: black; font-weight: bold; }
+h1 { color: #00ff88; text-align: center; }
+</style>
+</head>
+<body>
+<h1>SafetyDrive AI Co-Pilot</h1>
+
+<select id="lang" onchange="setLanguage()">
+<option value="en-ZM">English</option>
+<option value="ny-ZM">Nyanja</option>
+<option value="bem-ZM">Bemba</option>
+</select>
+
+<video id="video" autoplay playsinline></video>
+<div id="chat"></div>
+
+<input type="text" id="userInput" placeholder="Ask me anything...">
+<button onclick="sendMessage()">Send</button>
+<button onclick="startVoice()">Talk</button>
+<button onclick="seatbeltReminder()">Seatbelt</button>
+
+<script>
+let currentLang = "en-ZM";
+
+// CAMERA
+navigator.mediaDevices.getUserMedia({video: {facingMode: "user"}})
+.then(stream => { document.getElementById('video').srcObject = stream; })
+.catch(err => { document.getElementById('chat').innerHTML = "Camera Error: " + err });
+
+// SET LANGUAGE
+function setLanguage() {
+  currentLang = document.getElementById('lang').value;
+}
+
+// SPEAK FUNCTION
+function speak(text) {
+  const msg = new SpeechSynthesisUtterance(text);
+  msg.lang = currentLang;
+  msg.rate = 0.9;
+  speechSynthesis.speak(msg);
+  addMessage("AI", text);
+}
+
+// CHAT DISPLAY
+function addMessage(sender, text) {
+  const chat = document.getElementById('chat');
+  chat.innerHTML += `<div class="msg ${sender === 'You'? 'user' : 'ai'}"><b>${sender}:</b> ${text}</div>`;
+  chat.scrollTop = chat.scrollHeight;
+}
+
+// SEATBELT REMINDER
+function seatbeltReminder() {
+  const texts = {
+    "en-ZM": "Please wear your seatbelt for your safety",
+    "ny-ZM": "Chonde valani lamba wa chitetezo chanu",
+    "bem-ZM": "Nshilomba ufwele umukoba wakulwisha"
+  }
+  speak(texts);
+}
+
+// VOICE TO VOICE
+function startVoice() {
+  const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+  recognition.lang = currentLang;
+  recognition.start();
+  recognition.onresult = (event) => {
+    const question = event.results[0][0].transcript;
+    sendMessage(question);
+  }
+}
+
+// TEXT CHAT AI
+function sendMessage(text) {
+  const input = document.getElementById('userInput');
+  const question = text || input.value;
+  if(!question) return;
+  addMessage("You", question);
+  input.value = "";
+  
+  // SIMPLE AI RESPONSES
+  const responses = {
+    "en-ZM": {
+      "hello": "Hello driver. Drive safely today",
+      "tired": "Take a break. Pull over and rest for 10 minutes",
+      "speed": "Remember to follow the speed limit",
+      "seatbelt": "Please wear your seatbelt for your safety"
+    },
+    "ny-ZM": {
+      "hello": "Moni woyendetsa. Yendetsani mosamala lero",
+      "tired": "Pumulani. Imani ndi kupuma mphindi 10",
+      "seatbelt": "Chonde valani lamba wa chitetezo chanu"
+    },
+    "bem-ZM": {
+      "hello": "Shani umwendeshi. Enda bwino lelo",
+      "tired": "Pumula. Imika ufweme iminuti 10",
+      "seatbelt": "Nshilomba ufwele umukoba wakulwisha"
+    }
+  }
+  
+  let reply = "I am here to help you drive safely. Ask me about tiredness, speed, or seatbelt";
+  let langResponses = responses;
+  for(let key in langResponses){
+    if(question.toLowerCase().includes(key)) {
+      reply = langResponses;
+      break;
+    }
+  }
+  
+  setTimeout(() => speak(reply), 500);
+}
+
+// AUTO SEATBELT REMINDER EVERY 2 MINUTES
+setInterval(seatbeltReminder, 120000);
+</script>
+</body>
+</html>
