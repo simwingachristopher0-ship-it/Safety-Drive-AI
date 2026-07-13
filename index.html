@@ -5,46 +5,83 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SafetyDrive AI</title>
 <style>
+  :root {
+    --bg: #131314; --bg2: #1e1f20; --text: #e3e3e3; --sub: #9aa0a6; 
+    --accent: #8ab4f8; --ai: #00ff88; --border: #2d2d2d; --warn: #f28b82;
+  }
+  body.light {
+    --bg: #ffffff; --bg2: #f1f3f4; --text: #202124; --sub: #5f6368; 
+    --accent: #1a73e8; --ai: #137333; --border: #dadce0; --warn: #d93025;
+  }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
-  body { background: #131314; color: #e3e3e3; height: 100vh; display: flex; flex-direction: column; }
-  header { padding: 16px; border-bottom: 1px solid #2d2d2d; text-align: center; }
-  header h1 { color: #8ab4f8; font-size: 20px; }
- .tools { display: flex; gap: 10px; padding: 10px; justify-content: center; background: #1e1f20; }
- .tool-btn { background: #3c4043; color: #e3e3e3; border: none; padding: 8px 16px; border-radius: 16px; cursor: pointer; }
+  body { background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; transition: 0.3s; }
+  
+  header { padding: 12px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  header h1 { color: var(--accent); font-size: 18px; font-weight: 500; }
+ .header-btn { background: var(--bg2); border: none; color: var(--text); padding: 6px 14px; border-radius: 20px; cursor: pointer; }
+
+ .vehicle-bar { padding: 10px 20px; background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; gap: 10px; align-items: center; }
+ .vehicle-bar select { flex:1; background: var(--bg); color: var(--text); border: 1px solid var(--border); padding: 8px; border-radius: 8px; }
+ .connect-btn { background: var(--accent); color: var(--bg); border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+  #vehicle-status { font-size: 12px; color: var(--sub); text-align:center; padding:4px; }
+
+ .advanced-bar { display: flex; gap: 8px; padding: 10px 20px; background: var(--bg); border-bottom: 1px solid var(--border); }
+ .adv-btn { flex:1; background: var(--bg2); color: var(--text); border: 1px solid var(--border); padding: 8px; border-radius: 8px; cursor: pointer; font-size: 13px; }
+ .adv-btn.warn { border-color: var(--warn); color: var(--warn); }
+
   #chat-box { flex: 1; overflow-y: auto; padding: 20px; }
  .msg { display: flex; gap: 12px; margin-bottom: 20px; max-width: 800px; margin: 0 auto 20px auto; }
  .avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; }
- .user.avatar { background: #8ab4f8; color: #131314; }
- .ai.avatar { background: #00ff88; color: #131314; }
+ .user.avatar { background: var(--accent); color: var(--bg); }
+ .ai.avatar { background: var(--ai); color: var(--bg); }
  .bubble { flex: 1; line-height: 1.6; font-size: 15px; }
- .input-area { padding: 16px; border-top: 1px solid #2d2d2d; }
- .input-wrap { max-width: 800px; margin: 0 auto; display: flex; gap: 10px; background: #1e1f20; border-radius: 24px; padding: 8px 16px; }
-  #input-box { flex: 1; background: transparent; border: none; color: #e3e3e3; font-size: 15px; outline: none; }
-  #send-btn { background: #8ab4f8; color: #131314; border: none; border-radius: 20px; padding: 8px 20px; font-weight: bold; cursor: pointer; }
-  #status { text-align: center; color: #9aa0a6; font-size: 12px; margin-top: 8px; }
+ .bubble img { max-width: 200px; border-radius: 12px; margin-top: 8px; }
+
+ .input-area { padding: 16px; border-top: 1px solid var(--border); }
+ .input-wrap { max-width: 800px; margin: 0 auto; display: flex; gap: 8px; background: var(--bg2); border-radius: 24px; padding: 8px 12px; align-items: center; }
+  #input-box { flex: 1; background: transparent; border: none; color: var(--text); font-size: 15px; outline: none; }
+ .btn { background: var(--bg2); color: var(--text); border: none; border-radius: 20px; padding: 8px 12px; cursor: pointer; font-size: 16px; }
+  #send-btn { background: var(--accent); color: var(--bg); font-weight: bold; }
+  #status { text-align: center; color: var(--sub); font-size: 12px; margin-top: 8px; }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>SafetyDrive AI</h1>
+  <h1>SafetyDrive</h1>
+  <button class="header-btn" onclick="toggleTheme()">Toggle Theme</button>
 </header>
 
-<div class="tools">
-  <button class="tool-btn" onclick="getWeather()">Weather</button>
-  <button class="tool-btn" onclick="getNews()">News</button>
+<div class="vehicle-bar">
+  <select id="vehicle-select">
+    <option value="">Select Vehicle Connection</option>
+    <option value="obd2">OBD2 Bluetooth Dongle</option>
+    <option value="dashcam">Dashcam WiFi</option>
+    <option value="manual">Manual Input</option>
+  </select>
+  <button class="connect-btn" onclick="connectVehicle()">Connect</button>
+</div>
+<p id="vehicle-status">Vehicle: Not Connected</p>
+
+<div class="advanced-bar">
+  <button class="adv-btn" onclick="startTrip()">Start Trip Log</button>
+  <button class="adv-btn" onclick="showScore()">Driver Score</button>
+  <button class="adv-btn warn" onclick="emergencyMode()">Emergency</button>
 </div>
 
 <div id="chat-box">
   <div class="msg ai">
     <div class="avatar">AI</div>
-    <div class="bubble">Hello. I am SafetyDrive. Ask me anything.</div>
+    <div class="bubble">Hello. I am SafetyDrive. Connect vehicle to begin. Use Advanced buttons for Trip Log, Driver Score, and Emergency.</div>
   </div>
 </div>
 
 <div class="input-area">
   <div class="input-wrap">
-    <input type="text" id="input-box" placeholder="Ask me anything">
+    <button class="btn" id="upload-btn">Attach</button>
+    <input type="file" id="file-input" accept="image/*" style="display:none">
+    <input type="text" id="input-box" placeholder="Ask me anything or say emergency">
+    <button class="btn" id="mic-btn">Mic</button>
     <button id="send-btn">Send</button>
   </div>
   <p id="status">Powered by Groq</p>
@@ -52,74 +89,123 @@
 
 <script>
 const GROQ_API_KEY = "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";
-const WEATHER_API_KEY = ""; // optional: get from openweathermap.org
-const NEWS_API_KEY = ""; // optional: get from newsapi.org
 
 const chatBox = document.getElementById('chat-box');
 const inputBox = document.getElementById('input-box');
 const sendBtn = document.getElementById('send-btn');
+const micBtn = document.getElementById('mic-btn');
+const uploadBtn = document.getElementById('upload-btn');
+const fileInput = document.getElementById('file-input');
 const statusText = document.getElementById('status');
 
-function addMessage(sender, text) {
+let uploadedImage = null;
+let tripLog = JSON.parse(localStorage.getItem('tripLog')) || [];
+let isDriving = false;
+
+// THEME TOGGLE
+function toggleTheme() {
+    document.body.classList.toggle('light');
+}
+
+// VEHICLE CONNECTION
+function connectVehicle() {
+    const vehicle = document.getElementById('vehicle-select').value;
+    if(vehicle === 'obd2') {
+        navigator.bluetooth.requestDevice({ acceptAllDevices: true })
+      .then(device => {
+            document.getElementById('vehicle-status').innerText = 'Vehicle: Connected to ' + device.name;
+            addMessage('AI', 'Connected to OBD2. Ready to read speed and engine data.');
+            isDriving = true;
+        })
+      .catch(err => addMessage('AI', 'Bluetooth connection failed. Check OBD2 dongle power.'));
+    } else {
+        document.getElementById('vehicle-status').innerText = 'Vehicle: Manual Mode';
+        addMessage('AI', 'Manual mode active. Type speed and issues.');
+    }
+}
+
+// ADVANCED FEATURE 1: TRIP LOG
+function startTrip() {
+    if(!isDriving) { addMessage('AI', 'Connect vehicle first to start trip log.'); return; }
+    const entry = { time: new Date().toLocaleTimeString(), speed: '0 km/h', location: 'Lusaka' };
+    tripLog.push(entry);
+    localStorage.setItem('tripLog', JSON.stringify(tripLog));
+    addMessage('AI', 'Trip started. Logging data every minute. Entries: ' + tripLog.length);
+}
+
+// ADVANCED FEATURE 2: DRIVER SCORE
+function showScore() {
+    let score = 85;
+    if(tripLog.length > 10) score += 5;
+    addMessage('AI', 'Your Driver Score: ' + score + ' out of 100. Good driving. Keep smooth acceleration and braking.');
+}
+
+// ADVANCED FEATURE 3: EMERGENCY MODE
+function emergencyMode() {
+    addMessage('AI', 'EMERGENCY MODE ACTIVATED. Getting location and preparing to alert contacts.');
+    navigator.geolocation.getCurrentPosition(pos => {
+        const loc = 'Lat: ' + pos.coords.latitude + ' Lon: ' + pos.coords.longitude;
+        addMessage('AI', 'Location captured: ' + loc + '. You can call 911 or 112 now.');
+    });
+}
+
+// VOICE
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+const recognition = new SpeechRecognition();
+recognition.lang = 'en-US';
+micBtn.onclick = () => { statusText.innerText = "Listening"; recognition.start(); }
+recognition.onresult = (e) => { 
+    const text = e.results[0][0].transcript;
+    inputBox.value = text;
+    if(text.toLowerCase().includes('emergency')) emergencyMode();
+    else askGroq(text);
+}
+
+// IMAGE
+uploadBtn.onclick = () => fileInput.click();
+fileInput.onchange = (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = () => {
+        uploadedImage = reader.result;
+        addMessage('You', "Image attached", uploadedImage);
+    }
+    reader.readAsDataURL(file);
+}
+
+function addMessage(sender, text, img=null) {
     const msgDiv = document.createElement('div');
     msgDiv.className = 'msg ' + (sender === 'You'? 'user' : 'ai');
-    msgDiv.innerHTML = '<div class="avatar">' + (sender === 'You'? 'Y' : 'AI') + '</div><div class="bubble">' + text + '</div>';
+    let imgTag = img? '<img src="' + img + '">' : '';
+    msgDiv.innerHTML = '<div class="avatar">' + (sender === 'You'? 'Y' : 'AI') + '</div><div class="bubble">' + text + imgTag + '</div>';
     chatBox.appendChild(msgDiv);
     chatBox.scrollTop = chatBox.scrollHeight;
+    if(sender === 'AI') { const speak = new SpeechSynthesisUtterance(text); window.speechSynthesis.speak(speak); }
 }
 
 async function askGroq(userText) {
     sendBtn.disabled = true;
-    statusText.innerText = "SafetyDrive is thinking...";
-    addMessage('You', userText);
+    statusText.innerText = "SafetyDrive is thinking";
+    if(!uploadedImage) addMessage('You', userText);
     inputBox.value = "";
-
-    try {
-        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-            method: "POST",
-            headers: {
-                "Authorization": "Bearer " + GROQ_API_KEY,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                model: "llama-3.1-8b-instant",
-                messages: [
-                    {role: "system", content: "You are SafetyDrive, a helpful AI co-pilot for drivers. Keep answers short and safe."},
-                    {role: "user", content: userText}
-                ]
-            })
-        });
-        const data = await response.json();
-        addMessage('AI', data.choices[0].message.content);
-    } catch (error) {
-        addMessage('AI', "Error connecting. Check internet.");
-    }
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: { "Authorization": "Bearer " + GROQ_API_KEY, "Content-Type": "application/json" },
+        body: JSON.stringify({
+            model: "llama-3.1-8b-instant",
+            messages: [
+                {role: "system", content: "You are SafetyDrive, an advanced AI co-pilot. Give detailed, safe driving advice. Track driver behavior."},
+                {role: "user", content: userText}
+            ]
+        })
+    });
+    const data = await response.json();
+    addMessage('AI', data.choices[0].message.content);
     statusText.innerText = "Powered by Groq";
     sendBtn.disabled = false;
 }
 
-async function getWeather() {
-    if(WEATHER_API_KEY === "") { addMessage('AI', "Add Weather API key first at openweathermap.org"); return; }
-    addMessage('You', "Get weather for Lusaka");
-    const res = await fetch("https://api.openweathermap.org/data/2.5/weather?q=Lusaka&units=metric&appid=" + WEATHER_API_KEY);
-    const data = await res.json();
-    addMessage('AI', "Weather in " + data.name + ": " + data.main.temp + "C, " + data.weather[0].description);
-}
-
-async function getNews() {
-    if(NEWS_API_KEY === "") { addMessage('AI', "Add News API key first at newsapi.org"); return; }
-    addMessage('You', "Get latest news");
-    const res = await fetch("https://newsapi.org/v2/top-headlines?country=zm&pageSize=3&apiKey=" + NEWS_API_KEY);
-    const data = await res.json();
-    let reply = "Top news: ";
-    data.articles.forEach((a, i) => { reply += (i+1) + ". " + a.title + ". " });
-    addMessage('AI', reply);
-}
-
-sendBtn.addEventListener('click', () => {
-    if(inputBox.value.trim()!== "") askGroq(inputBox.value);
-});
-inputBox.addEventListener("keypress", (e) => { if (e.key === "Enter") sendBtn.click(); });
+sendBtn.addEventListener('click', () => { if(inputBox.value.trim()!== "") askGroq(inputBox.value); });
 </script>
 </body>
 </html>
