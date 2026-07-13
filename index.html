@@ -1,130 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SafetyDrive AI Co-Pilot</title>
+<title>SafetyDrive AI</title>
 <style>
-body { font-family: Arial; background: #0a0a0a; color: white; margin: 0; padding: 15px; }
-#video { width: 100%; border-radius: 15px; border: 3px solid #00ff88; }
-#chat { height: 200px; overflow-y: scroll; background: #111; padding: 10px; border-radius: 10px; margin: 10px 0; }
-.msg { margin: 8px 0; padding: 8px; border-radius: 8px; }
-.user { background: #00ff88; color: black; text-align: right; }
-.ai { background: #222; color: #00ff88; text-align: left; }
-input, button, select { padding: 12px; margin: 5px; border-radius: 8px; border: none; font-size: 16px; }
-input { width: 60%; background: #222; color: white; }
-button { background: #00ff88; color: black; font-weight: bold; }
-h1 { color: #00ff88; text-align: center; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+  body { background: #131314; color: #e3e3e3; height: 100vh; display: flex; flex-direction: column; }
+  header { padding: 16px; border-bottom: 1px solid #2d2d2d; text-align: center; }
+  header h1 { color: #8ab4f8; font-size: 20px; }
+ .tools { display: flex; gap: 10px; padding: 10px; justify-content: center; background: #1e1f20; }
+ .tool-btn { background: #3c4043; color: #e3e3e3; border: none; padding: 8px 16px; border-radius: 16px; cursor: pointer; }
+  #chat-box { flex: 1; overflow-y: auto; padding: 20px; }
+ .msg { display: flex; gap: 12px; margin-bottom: 20px; max-width: 800px; margin: 0 auto 20px auto; }
+ .avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; }
+ .user.avatar { background: #8ab4f8; color: #131314; }
+ .ai.avatar { background: #00ff88; color: #131314; }
+ .bubble { flex: 1; line-height: 1.6; font-size: 15px; }
+ .input-area { padding: 16px; border-top: 1px solid #2d2d2d; }
+ .input-wrap { max-width: 800px; margin: 0 auto; display: flex; gap: 10px; background: #1e1f20; border-radius: 24px; padding: 8px 16px; }
+  #input-box { flex: 1; background: transparent; border: none; color: #e3e3e3; font-size: 15px; outline: none; }
+  #send-btn { background: #8ab4f8; color: #131314; border: none; border-radius: 20px; padding: 8px 20px; font-weight: bold; cursor: pointer; }
+  #status { text-align: center; color: #9aa0a6; font-size: 12px; margin-top: 8px; }
 </style>
 </head>
 <body>
-<h1>SafetyDrive AI Co-Pilot</h1>
 
-<select id="lang" onchange="setLanguage()">
-<option value="en-ZM">English</option>
-<option value="ny-ZM">Nyanja</option>
-<option value="bem-ZM">Bemba</option>
-</select>
+<header>
+  <h1>SafetyDrive AI</h1>
+</header>
 
-<video id="video" autoplay playsinline></video>
-<div id="chat"></div>
+<div class="tools">
+  <button class="tool-btn" onclick="getWeather()">Weather</button>
+  <button class="tool-btn" onclick="getNews()">News</button>
+</div>
 
-<input type="text" id="userInput" placeholder="Ask me anything...">
-<button onclick="sendMessage()">Send</button>
-<button onclick="startVoice()">Talk</button>
-<button onclick="seatbeltReminder()">Seatbelt</button>
+<div id="chat-box">
+  <div class="msg ai">
+    <div class="avatar">AI</div>
+    <div class="bubble">Hello. I am SafetyDrive. Ask me anything.</div>
+  </div>
+</div>
+
+<div class="input-area">
+  <div class="input-wrap">
+    <input type="text" id="input-box" placeholder="Ask me anything">
+    <button id="send-btn">Send</button>
+  </div>
+  <p id="status">Powered by Groq</p>
+</div>
 
 <script>
-let currentLang = "en-ZM";
+const GROQ_API_KEY = "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";
+const WEATHER_API_KEY = ""; // optional: get from openweathermap.org
+const NEWS_API_KEY = ""; // optional: get from newsapi.org
 
-// CAMERA
-navigator.mediaDevices.getUserMedia({video: {facingMode: "user"}})
-.then(stream => { document.getElementById('video').srcObject = stream; })
-.catch(err => { document.getElementById('chat').innerHTML = "Camera Error: " + err });
+const chatBox = document.getElementById('chat-box');
+const inputBox = document.getElementById('input-box');
+const sendBtn = document.getElementById('send-btn');
+const statusText = document.getElementById('status');
 
-// SET LANGUAGE
-function setLanguage() {
-  currentLang = document.getElementById('lang').value;
-}
-
-// SPEAK FUNCTION
-function speak(text) {
-  const msg = new SpeechSynthesisUtterance(text);
-  msg.lang = currentLang;
-  msg.rate = 0.9;
-  speechSynthesis.speak(msg);
-  addMessage("AI", text);
-}
-
-// CHAT DISPLAY
 function addMessage(sender, text) {
-  const chat = document.getElementById('chat');
-  chat.innerHTML += `<div class="msg ${sender === 'You'? 'user' : 'ai'}"><b>${sender}:</b> ${text}</div>`;
-  chat.scrollTop = chat.scrollHeight;
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'msg ' + (sender === 'You'? 'user' : 'ai');
+    msgDiv.innerHTML = '<div class="avatar">' + (sender === 'You'? 'Y' : 'AI') + '</div><div class="bubble">' + text + '</div>';
+    chatBox.appendChild(msgDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// SEATBELT REMINDER
-function seatbeltReminder() {
-  const texts = {
-    "en-ZM": "Please wear your seatbelt for your safety",
-    "ny-ZM": "Chonde valani lamba wa chitetezo chanu",
-    "bem-ZM": "Nshilomba ufwele umukoba wakulwisha"
-  }
-  speak(texts);
-}
+async function askGroq(userText) {
+    sendBtn.disabled = true;
+    statusText.innerText = "SafetyDrive is thinking...";
+    addMessage('You', userText);
+    inputBox.value = "";
 
-// VOICE TO VOICE
-function startVoice() {
-  const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-  recognition.lang = currentLang;
-  recognition.start();
-  recognition.onresult = (event) => {
-    const question = event.results[0][0].transcript;
-    sendMessage(question);
-  }
-}
-
-// TEXT CHAT AI
-function sendMessage(text) {
-  const input = document.getElementById('userInput');
-  const question = text || input.value;
-  if(!question) return;
-  addMessage("You", question);
-  input.value = "";
-  
-  // SIMPLE AI RESPONSES
-  const responses = {
-    "en-ZM": {
-      "hello": "Hello driver. Drive safely today",
-      "tired": "Take a break. Pull over and rest for 10 minutes",
-      "speed": "Remember to follow the speed limit",
-      "seatbelt": "Please wear your seatbelt for your safety"
-    },
-    "ny-ZM": {
-      "hello": "Moni woyendetsa. Yendetsani mosamala lero",
-      "tired": "Pumulani. Imani ndi kupuma mphindi 10",
-      "seatbelt": "Chonde valani lamba wa chitetezo chanu"
-    },
-    "bem-ZM": {
-      "hello": "Shani umwendeshi. Enda bwino lelo",
-      "tired": "Pumula. Imika ufweme iminuti 10",
-      "seatbelt": "Nshilomba ufwele umukoba wakulwisha"
+    try {
+        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Authorization": "Bearer " + GROQ_API_KEY,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                model: "llama-3.1-8b-instant",
+                messages: [
+                    {role: "system", content: "You are SafetyDrive, a helpful AI co-pilot for drivers. Keep answers short and safe."},
+                    {role: "user", content: userText}
+                ]
+            })
+        });
+        const data = await response.json();
+        addMessage('AI', data.choices[0].message.content);
+    } catch (error) {
+        addMessage('AI', "Error connecting. Check internet.");
     }
-  }
-  
-  let reply = "I am here to help you drive safely. Ask me about tiredness, speed, or seatbelt";
-  let langResponses = responses;
-  for(let key in langResponses){
-    if(question.toLowerCase().includes(key)) {
-      reply = langResponses;
-      break;
-    }
-  }
-  
-  setTimeout(() => speak(reply), 500);
+    statusText.innerText = "Powered by Groq";
+    sendBtn.disabled = false;
 }
 
-// AUTO SEATBELT REMINDER EVERY 2 MINUTES
-setInterval(seatbeltReminder, 120000);
+async function getWeather() {
+    if(WEATHER_API_KEY === "") { addMessage('AI', "Add Weather API key first at openweathermap.org"); return; }
+    addMessage('You', "Get weather for Lusaka");
+    const res = await fetch("https://api.openweathermap.org/data/2.5/weather?q=Lusaka&units=metric&appid=" + WEATHER_API_KEY);
+    const data = await res.json();
+    addMessage('AI', "Weather in " + data.name + ": " + data.main.temp + "C, " + data.weather[0].description);
+}
+
+async function getNews() {
+    if(NEWS_API_KEY === "") { addMessage('AI', "Add News API key first at newsapi.org"); return; }
+    addMessage('You', "Get latest news");
+    const res = await fetch("https://newsapi.org/v2/top-headlines?country=zm&pageSize=3&apiKey=" + NEWS_API_KEY);
+    const data = await res.json();
+    let reply = "Top news: ";
+    data.articles.forEach((a, i) => { reply += (i+1) + ". " + a.title + ". " });
+    addMessage('AI', reply);
+}
+
+sendBtn.addEventListener('click', () => {
+    if(inputBox.value.trim()!== "") askGroq(inputBox.value);
+});
+inputBox.addEventListener("keypress", (e) => { if (e.key === "Enter") sendBtn.click(); });
 </script>
 </body>
 </html>
