@@ -6,43 +6,44 @@
 <title>SafetyDrive AI</title>
 <style>
   :root {
-    --bg: #131314; --bg2: #1e1f20; --text: #e3e3e3; --sub: #9aa0a6; 
-    --accent: #8ab4f8; --ai: #00ff88; --border: #2d2d2d; --warn: #f28b82;
+    --bg: #131314; --bg2: #1e1f20; --text: #e3e3e3; --sub: #9aa0a6;
+    --accent: #8ab4f8; --ai: #a8c7fa; --border: #2d2d2d; --warn: #f28b82;
   }
   body.light {
-    --bg: #ffffff; --bg2: #f1f3f4; --text: #202124; --sub: #5f6368; 
-    --accent: #1a73e8; --ai: #137333; --border: #dadce0; --warn: #d93025;
+    --bg: #ffffff; --bg2: #f8f9fa; --text: #202124; --sub: #5f6368;
+    --accent: #1a73e8; --ai: #1967d2; --border: #dadce0; --warn: #d93025;
   }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Google Sans', Arial, sans-serif; }
   body { background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; transition: 0.3s; }
-  
-  header { padding: 12px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-  header h1 { color: var(--accent); font-size: 18px; font-weight: 500; }
- .header-btn { background: var(--bg2); border: none; color: var(--text); padding: 6px 14px; border-radius: 20px; cursor: pointer; }
 
- .vehicle-bar { padding: 10px 20px; background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; gap: 10px; align-items: center; }
- .vehicle-bar select { flex:1; background: var(--bg); color: var(--text); border: 1px solid var(--border); padding: 8px; border-radius: 8px; }
- .connect-btn { background: var(--accent); color: var(--bg); border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; }
-  #vehicle-status { font-size: 12px; color: var(--sub); text-align:center; padding:4px; }
+  header { padding: 12px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  header h1 { color: var(--text); font-size: 20px; font-weight: 400; }
+.header-btn { background: var(--bg2); border: 1px solid var(--border); color: var(--text); padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 14px; }
 
- .advanced-bar { display: flex; gap: 8px; padding: 10px 20px; background: var(--bg); border-bottom: 1px solid var(--border); }
- .adv-btn { flex:1; background: var(--bg2); color: var(--text); border: 1px solid var(--border); padding: 8px; border-radius: 8px; cursor: pointer; font-size: 13px; }
- .adv-btn.warn { border-color: var(--warn); color: var(--warn); }
+.vehicle-bar { padding: 12px 24px; background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; gap: 12px; align-items: center; }
+.vehicle-bar select { flex:1; background: var(--bg); color: var(--text); border: 1px solid var(--border); padding: 10px; border-radius: 8px; font-size: 14px; }
+.connect-btn { background: var(--accent); color: var(--bg); border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 500; }
+  #vehicle-status { font-size: 12px; color: var(--sub); text-align:center; padding:6px; }
 
-  #chat-box { flex: 1; overflow-y: auto; padding: 20px; }
- .msg { display: flex; gap: 12px; margin-bottom: 20px; max-width: 800px; margin: 0 auto 20px auto; }
- .avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; }
- .user.avatar { background: var(--accent); color: var(--bg); }
- .ai.avatar { background: var(--ai); color: var(--bg); }
- .bubble { flex: 1; line-height: 1.6; font-size: 15px; }
- .bubble img { max-width: 200px; border-radius: 12px; margin-top: 8px; }
+.advanced-bar { display: flex; gap: 10px; padding: 12px 24px; background: var(--bg); border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.adv-btn { flex:1; min-width: 140px; background: var(--bg2); color: var(--text); border: 1px solid var(--border); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 14px; }
+.adv-btn.warn { border-color: var(--warn); color: var(--warn); }
 
- .input-area { padding: 16px; border-top: 1px solid var(--border); }
- .input-wrap { max-width: 800px; margin: 0 auto; display: flex; gap: 8px; background: var(--bg2); border-radius: 24px; padding: 8px 12px; align-items: center; }
+  #chat-box { flex: 1; overflow-y: auto; padding: 24px; }
+.msg { display: flex; gap: 16px; margin-bottom: 24px; max-width: 900px; margin: 0 auto 24px auto; }
+.avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 500; font-size: 14px; flex-shrink: 0; }
+.user.avatar { background: var(--accent); color: var(--bg); }
+.ai.avatar { background: var(--ai); color: var(--bg); }
+.bubble { flex: 1; line-height: 1.6; font-size: 15px; }
+.bubble img { max-width: 180px; border-radius: 8px; margin: 8px 8px 0 0; }
+.image-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+
+.input-area { padding: 20px 24px; border-top: 1px solid var(--border); }
+.input-wrap { max-width: 900px; margin: 0 auto; display: flex; gap: 10px; background: var(--bg2); border-radius: 28px; padding: 10px 16px; align-items: center; border: 1px solid var(--border); }
   #input-box { flex: 1; background: transparent; border: none; color: var(--text); font-size: 15px; outline: none; }
- .btn { background: var(--bg2); color: var(--text); border: none; border-radius: 20px; padding: 8px 12px; cursor: pointer; font-size: 16px; }
-  #send-btn { background: var(--accent); color: var(--bg); font-weight: bold; }
-  #status { text-align: center; color: var(--sub); font-size: 12px; margin-top: 8px; }
+.btn { background: transparent; color: var(--sub); border: none; cursor: pointer; font-size: 16px; padding: 8px; }
+  #send-btn { background: var(--accent); color: var(--bg); font-weight: 500; border-radius: 20px; padding: 8px 20px; }
+  #status { text-align: center; color: var(--sub); font-size: 12px; margin-top: 10px; }
 </style>
 </head>
 <body>
@@ -72,15 +73,15 @@
 <div id="chat-box">
   <div class="msg ai">
     <div class="avatar">AI</div>
-    <div class="bubble">Hello. I am SafetyDrive. Connect vehicle to begin. Use Advanced buttons for Trip Log, Driver Score, and Emergency.</div>
+    <div class="bubble">Hello Christopher. I am SafetyDrive. I will only speak when you ask me to "talk" or "speak". Upload multiple images and connect your vehicle to begin.</div>
   </div>
 </div>
 
 <div class="input-area">
   <div class="input-wrap">
     <button class="btn" id="upload-btn">Attach</button>
-    <input type="file" id="file-input" accept="image/*" style="display:none">
-    <input type="text" id="input-box" placeholder="Ask me anything or say emergency">
+    <input type="file" id="file-input" accept="image/*" multiple>
+    <input type="text" id="input-box" placeholder="Message SafetyDrive">
     <button class="btn" id="mic-btn">Mic</button>
     <button id="send-btn">Send</button>
   </div>
@@ -89,6 +90,7 @@
 
 <script>
 const GROQ_API_KEY = "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";
+const USER_NAME = "Christopher";
 
 const chatBox = document.getElementById('chat-box');
 const inputBox = document.getElementById('input-box');
@@ -98,9 +100,10 @@ const uploadBtn = document.getElementById('upload-btn');
 const fileInput = document.getElementById('file-input');
 const statusText = document.getElementById('status');
 
-let uploadedImage = null;
+let uploadedImages = [];
 let tripLog = JSON.parse(localStorage.getItem('tripLog')) || [];
 let isDriving = false;
+let speakEnabled = false;
 
 // THEME TOGGLE
 function toggleTheme() {
@@ -112,90 +115,108 @@ function connectVehicle() {
     const vehicle = document.getElementById('vehicle-select').value;
     if(vehicle === 'obd2') {
         navigator.bluetooth.requestDevice({ acceptAllDevices: true })
-      .then(device => {
+     .then(device => {
             document.getElementById('vehicle-status').innerText = 'Vehicle: Connected to ' + device.name;
-            addMessage('AI', 'Connected to OBD2. Ready to read speed and engine data.');
+            addMessage('AI', 'Connected Christopher. Ready to read speed and engine data.');
             isDriving = true;
         })
-      .catch(err => addMessage('AI', 'Bluetooth connection failed. Check OBD2 dongle power.'));
+     .catch(err => addMessage('AI', 'Bluetooth connection failed. Check OBD2 dongle power.'));
     } else {
         document.getElementById('vehicle-status').innerText = 'Vehicle: Manual Mode';
-        addMessage('AI', 'Manual mode active. Type speed and issues.');
+        addMessage('AI', 'Manual mode active Christopher. Type speed and issues.');
     }
 }
 
-// ADVANCED FEATURE 1: TRIP LOG
+// ADVANCED FEATURES
 function startTrip() {
-    if(!isDriving) { addMessage('AI', 'Connect vehicle first to start trip log.'); return; }
+    if(!isDriving) { addMessage('AI', 'Connect vehicle first Christopher to start trip log.'); return; }
     const entry = { time: new Date().toLocaleTimeString(), speed: '0 km/h', location: 'Lusaka' };
     tripLog.push(entry);
     localStorage.setItem('tripLog', JSON.stringify(tripLog));
-    addMessage('AI', 'Trip started. Logging data every minute. Entries: ' + tripLog.length);
+    addMessage('AI', 'Trip started Christopher. Logging data. Total entries: ' + tripLog.length);
 }
 
-// ADVANCED FEATURE 2: DRIVER SCORE
 function showScore() {
-    let score = 85;
-    if(tripLog.length > 10) score += 5;
-    addMessage('AI', 'Your Driver Score: ' + score + ' out of 100. Good driving. Keep smooth acceleration and braking.');
+    let score = 85 + Math.min(tripLog.length, 15);
+    addMessage('AI', 'Your Driver Score Christopher: ' + score + ' out of 100. Keep smooth acceleration and braking.');
 }
 
-// ADVANCED FEATURE 3: EMERGENCY MODE
 function emergencyMode() {
-    addMessage('AI', 'EMERGENCY MODE ACTIVATED. Getting location and preparing to alert contacts.');
+    addMessage('AI', 'EMERGENCY MODE ACTIVATED Christopher. Getting location now.');
     navigator.geolocation.getCurrentPosition(pos => {
         const loc = 'Lat: ' + pos.coords.latitude + ' Lon: ' + pos.coords.longitude;
         addMessage('AI', 'Location captured: ' + loc + '. You can call 911 or 112 now.');
     });
 }
 
-// VOICE
+// VOICE - ONLY SPEAKS WHEN ASKED
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 const recognition = new SpeechRecognition();
 recognition.lang = 'en-US';
 micBtn.onclick = () => { statusText.innerText = "Listening"; recognition.start(); }
-recognition.onresult = (e) => { 
+recognition.onresult = (e) => {
     const text = e.results[0][0].transcript;
     inputBox.value = text;
     if(text.toLowerCase().includes('emergency')) emergencyMode();
-    else askGroq(text);
+    else if(text.toLowerCase().includes('talk') || text.toLowerCase().includes('speak')) speakEnabled = true;
+    askGroq(text);
 }
 
-// IMAGE
+// MULTI IMAGE UPLOAD 1 to 1000000
 uploadBtn.onclick = () => fileInput.click();
 fileInput.onchange = (e) => {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onload = () => {
-        uploadedImage = reader.result;
-        addMessage('You', "Image attached", uploadedImage);
-    }
-    reader.readAsDataURL(file);
+    uploadedImages = [];
+    const files = Array.from(e.target.files);
+    files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            uploadedImages.push(reader.result);
+            if(uploadedImages.length === files.length) {
+                addMessage('You', files.length + ' images attached', uploadedImages);
+            }
+        }
+        reader.readAsDataURL(file);
+    });
 }
 
-function addMessage(sender, text, img=null) {
+function addMessage(sender, text, imgs=[]) {
     const msgDiv = document.createElement('div');
     msgDiv.className = 'msg ' + (sender === 'You'? 'user' : 'ai');
-    let imgTag = img? '<img src="' + img + '">' : '';
-    msgDiv.innerHTML = '<div class="avatar">' + (sender === 'You'? 'Y' : 'AI') + '</div><div class="bubble">' + text + imgTag + '</div>';
+    let imgGrid = '';
+    if(imgs.length > 0) {
+        imgGrid = '<div class="image-grid">';
+        imgs.forEach(img => { imgGrid += '<img src="' + img + '">'; });
+        imgGrid += '</div>';
+    }
+    msgDiv.innerHTML = '<div class="avatar">' + (sender === 'You'? USER_NAME[0] : 'AI') + '</div><div class="bubble">' + text + imgGrid + '</div>';
     chatBox.appendChild(msgDiv);
     chatBox.scrollTop = chatBox.scrollHeight;
-    if(sender === 'AI') { const speak = new SpeechSynthesisUtterance(text); window.speechSynthesis.speak(speak); }
+
+    // ONLY SPEAK IF USER ASKED
+    if(sender === 'AI' && speakEnabled) {
+        const speak = new SpeechSynthesisUtterance(text);
+        window.speechSynthesis.speak(speak);
+        speakEnabled = false; // reset after one reply
+    }
 }
 
 async function askGroq(userText) {
     sendBtn.disabled = true;
     statusText.innerText = "SafetyDrive is thinking";
-    if(!uploadedImage) addMessage('You', userText);
+    if(uploadedImages.length === 0) addMessage('You', userText);
     inputBox.value = "";
+
+    let prompt = userText;
+    if(uploadedImages.length > 0) prompt = userText + " I have attached " + uploadedImages.length + " images for analysis.";
+
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
         headers: { "Authorization": "Bearer " + GROQ_API_KEY, "Content-Type": "application/json" },
         body: JSON.stringify({
             model: "llama-3.1-8b-instant",
             messages: [
-                {role: "system", content: "You are SafetyDrive, an advanced AI co-pilot. Give detailed, safe driving advice. Track driver behavior."},
-                {role: "user", content: userText}
+                {role: "system", content: "You are SafetyDrive, an AI co-pilot for Christopher. Be helpful, detailed, and safe. Address the user as Christopher."},
+                {role: "user", content: prompt}
             ]
         })
     });
@@ -203,9 +224,11 @@ async function askGroq(userText) {
     addMessage('AI', data.choices[0].message.content);
     statusText.innerText = "Powered by Groq";
     sendBtn.disabled = false;
+    uploadedImages = [];
 }
 
 sendBtn.addEventListener('click', () => { if(inputBox.value.trim()!== "") askGroq(inputBox.value); });
+inputBox.addEventListener("keypress", (e) => { if (e.key === "Enter") sendBtn.click(); });
 </script>
 </body>
 </html>
