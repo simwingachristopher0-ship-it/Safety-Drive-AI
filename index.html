@@ -3,162 +3,103 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SafetyDrive AI</title>
+<title>SafetyDrive</title>
 <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
-  body { background: #131314; color: #e3e3e3; height: 100vh; display: flex; flex-direction: column; }
+  :root { --bg: #131314; --bg2: #1e1f20; --text: #e3e3e3; --sub: #9aa0a6; --accent: #8ab4f8; --border: #303134; }
+  body.light { --bg: #fff; --bg2: #f1f3f4; --text: #202124; --sub: #5f6368; --accent: #1a73e8; --border: #dadce0; }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+  body { background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; }
   
-  header { padding: 16px; border-bottom: 1px solid #2d2d2d; text-align: center; }
-  header h1 { color: #8ab4f8; font-size: 20px; font-weight: 500; }
-  
- .tools { display: flex; gap: 10px; padding: 10px; justify-content: center; background: #1e1f20; }
-.tool-btn { background: #3c4043; color: #e3e3e3; border: none; padding: 8px 16px; border-radius: 16px; cursor: pointer; }
-.tool-btn:hover { background: #5f6368; }
+  header { padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+  header h1 { font-size: 22px; font-weight: 400; }
+.theme { background: var(--bg2); border: 1px solid var(--border); padding: 8px 16px; border-radius: 20px; color: var(--text); cursor: pointer; }
 
-  #chat-box { flex: 1; overflow-y: auto; padding: 20px; }
-.msg { display: flex; gap: 12px; margin-bottom: 20px; max-width: 800px; margin-left: auto; margin-right: auto; }
-.avatar { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; }
-.user.avatar { background: #8ab4f8; color: #131314; }
-.ai.avatar { background: #00ff88; color: #131314; }
-.bubble { flex: 1; line-height: 1.6; font-size: 15px; }
+  #chat { flex: 1; overflow-y: auto; padding: 0 20px; }
+.msg { max-width: 700px; margin: 20px auto; display: flex; gap: 16px; }
+.avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--accent); color: var(--bg); display: flex; align-items: center; justify-content: center; font-weight: bold; }
+.ai.avatar { background: #a8c7fa; }
+.content { flex: 1; line-height: 1.6; font-size: 15px; }
+.images { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.images img { width: 120px; height: 120px; object-fit: cover; border-radius: 12px; }
 
-.input-area { padding: 16px; border-top: 1px solid #2d2d2d; }
-.input-wrap { max-width: 800px; margin: 0 auto; display: flex; gap: 10px; background: #1e1f20; border-radius: 24px; padding: 8px 16px; }
-  #input-box { flex: 1; background: transparent; border: none; color: #e3e3e3; font-size: 15px; outline: none; }
-  #send-btn { background: #8ab4f8; color: #131314; border: none; border-radius: 20px; padding: 8px 20px; font-weight: bold; cursor: pointer; }
-  #status { text-align: center; color: #9aa0a6; font-size: 12px; margin-top: 8px; }
+ .input-box { padding: 20px; }
+.wrap { max-width: 700px; margin: 0 auto; background: var(--bg2); border: 1px solid var(--border); border-radius: 28px; display: flex; align-items: center; padding: 8px 16px; }
+  #text { flex: 1; background: none; border: none; color: var(--text); font-size: 15px; outline: none; }
+.btn { background: none; border: none; color: var(--sub); font-size: 16px; cursor: pointer; padding: 8px; }
+  #send { background: var(--accent); color: var(--bg); border-radius: 20px; padding: 8px 18px; font-weight: 500; }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>SafetyDrive AI</h1>
+  <h1>SafetyDrive</h1>
+  <button class="theme" onclick="document.body.classList.toggle('light')">Theme</button>
 </header>
 
-<div class="tools">
-  <button class="tool-btn" onclick="getWeather()">Weather</button>
-  <button class="tool-btn" onclick="getNews()">News</button>
-</div>
-
-<div id="chat-box">
+<div id="chat">
   <div class="msg ai">
     <div class="avatar">AI</div>
-    <div class="bubble">Hello. I am SafetyDrive. I can chat, give weather, and news. What do you need?</div>
+    <div class="content">Hello Christopher<br><br>I am SafetyDrive. I will only speak when you say "speak".<br>You can upload multiple images and ask me anything.</div>
   </div>
 </div>
 
-<div class="input-area">
-  <div class="input-wrap">
-    <input type="text" id="input-box" placeholder="Ask me anything">
-    <button id="send-btn">Send</button>
+<div class="input-box">
+  <div class="wrap">
+    <button class="btn" onclick="document.getElementById('files').click()">Attach</button>
+    <input type="file" id="files" multiple accept="image/*" style="display:none">
+    <input type="text" id="text" placeholder="Message SafetyDrive">
+    <button class="btn" id="mic">Mic</button>
+    <button id="send">Send</button>
   </div>
-  <p id="status">Powered by Groq + APIs</p>
 </div>
 
 <script>
-// PUT YOUR KEYS HERE
-const GROQ_API_KEY = "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";
-const WEATHER_API_KEY = "PASTE_YOUR_OPENWEATHER_KEY_HERE"; // get free at openweathermap.org
-const NEWS_API_KEY = "PASTE_YOUR_NEWSAPI_KEY_HERE"; // get free at newsapi.org
+const KEY = "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";
+let imgs = [];
+let speak = false;
+const chat = document.getElementById('chat');
 
-const chatBox = document.getElementById('chat-box');
-const inputBox = document.getElementById('input-box');
-const sendBtn = document.getElementById('send-btn');
-const statusText = document.getElementById('status');
-
-function addMessage(sender, text) {
-    const msgDiv = document.createElement('div');
-    msgDiv.className = 'msg ' + (sender === 'You'? 'user' : 'ai');
-    
-    const avatar = document.createElement('div');
-    avatar.className = 'avatar';
-    avatar.innerText = sender === 'You'? 'Y' : 'AI';
-    
-    const bubble = document.createElement('div');
-    bubble.className = 'bubble';
-    bubble.innerText = text;
-    
-    msgDiv.appendChild(avatar);
-    msgDiv.appendChild(bubble);
-    chatBox.appendChild(msgDiv);
-    chatBox.scrollTop = chatBox.scrollHeight;
+// MULTI IMAGE UPLOAD
+document.getElementById('files').onchange = e => {
+  imgs = [];
+  [...e.target.files].forEach(f => {
+    const r = new FileReader();
+    r.onload = () => { imgs.push(r.result); if(imgs.length === e.target.files.length) add('You', `${imgs.length} images attached`, imgs); }
+    r.readAsDataURL(f);
+  });
 }
 
-// AI CHAT WITH GROQ
-async function askGroq(userText) {
-    sendBtn.disabled = true;
-    statusText.innerText = "SafetyDrive is thinking...";
-    addMessage('You', userText);
-    inputBox.value = "";
+// VOICE
+const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+document.getElementById('mic').onclick = () => rec.start();
+rec.onresult = e => { const t = e.results[0][0].transcript; document.getElementById('text').value = t; if(t.toLowerCase().includes('speak')) speak = true; send(t); }
 
-    try {
-        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-            method: "POST",
-            headers: {
-                "Authorization": "Bearer " + GROQ_API_KEY,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                model: "llama-3.1-8b-instant",
-                messages: [
-                    {role: "system", content: "You are SafetyDrive, a helpful AI co-pilot for drivers. Be concise and helpful."},
-                    {role: "user", content: userText}
-                ]
-            })
-        });
-        const data = await response.json();
-        const aiReply = data.choices[0].message.content;
-        statusText.innerText = "Powered by Groq + APIs";
-        addMessage('AI', aiReply);
-    } catch (error) {
-        addMessage('AI', "Error connecting to AI. Check internet.");
-    }
-    sendBtn.disabled = false;
+function add(who, txt, imgArr=[]) {
+  const d = document.createElement('div');
+  d.className = 'msg ' + (who==='You'?'user':'ai');
+  let imgHtml = '';
+  if(imgArr.length) { imgHtml = '<div class="images">'; imgArr.forEach(i=>imgHtml+=`<img src="${i}">`); imgHtml+='</div>'; }
+  d.innerHTML = `<div class="avatar">${who==='You'?'C':'AI'}</div><div class="content">${txt}${imgHtml}</div>`;
+  chat.appendChild(d); chat.scrollTop = chat.scrollHeight;
+  if(who==='AI' && speak) { speechSynthesis.speak(new SpeechSynthesisUtterance(txt)); speak=false; }
 }
 
-// WEATHER API
-async function getWeather() {
-    statusText.innerText = "Getting weather...";
-    addMessage('You', "Get weather for Lusaka");
-    try {
-        const res = await fetch("https://api.openweathermap.org/data/2.5/weather?q=Lusaka&units=metric&appid=" + WEATHER_API_KEY);
-        const data = await res.json();
-        const reply = "Weather in " + data.name + ": " + data.main.temp + "C, " + data.weather[0].description;
-        addMessage('AI', reply);
-    } catch {
-        addMessage('AI', "Could not get weather. Check your Weather API key.");
-    }
-    statusText.innerText = "Powered by Groq + APIs";
+async function send(t) {
+  if(!t.trim()) return;
+  if(imgs.length===0) add('You', t);
+  document.getElementById('text').value = '';
+  
+  const res = await fetch("https://api.groq.com/openai/v1/chat/completions",{
+    method:"POST",
+    headers:{"Authorization":"Bearer "+KEY,"Content-Type":"application/json"},
+    body:JSON.stringify({model:"llama-3.1-8b-instant",messages:[{role:"system",content:"You are SafetyDrive for Christopher. Be helpful and clear."},{role:"user",content:t}]})
+  });
+  const data = await res.json();
+  add('AI', data.choices[0].message.content);
+  imgs = [];
 }
 
-// NEWS API
-async function getNews() {
-    statusText.innerText = "Getting news...";
-    addMessage('You', "Get latest news");
-    try {
-        const res = await fetch("https://newsapi.org/v2/top-headlines?country=zm&pageSize=3&apiKey=" + NEWS_API_KEY);
-        const data = await res.json();
-        let reply = "Top news: ";
-        data.articles.forEach((a, i) => { reply += (i+1) + ". " + a.title + ". " });
-        addMessage('AI', reply);
-    } catch {
-        addMessage('AI', "Could not get news. Check your News API key.");
-    }
-    statusText.innerText = "Powered by Groq + APIs";
-}
-
-sendBtn.addEventListener('click', () => {
-    if(inputBox.value.trim()!== "") {
-        askGroq(inputBox.value);
-    }
-});
-
-inputBox.addEventListener("keypress", function(event) {
-    if (event.key === "Enter" &&!sendBtn.disabled) {
-        sendBtn.click();
-    }
-});
+document.getElementById('send').onclick = () => send(document.getElementById('text').value);
 </script>
-
 </body>
 </html>
