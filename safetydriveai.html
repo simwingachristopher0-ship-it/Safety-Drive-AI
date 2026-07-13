@@ -1,130 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SafetyDrive AI Co-Pilot</title>
+<title>ZAMBIA AI</title>
 <style>
-body { font-family: Arial; background: #0a0a0a; color: white; margin: 0; padding: 15px; }
-#video { width: 100%; border-radius: 15px; border: 3px solid #00ff88; }
-#chat { height: 200px; overflow-y: scroll; background: #111; padding: 10px; border-radius: 10px; margin: 10px 0; }
-.msg { margin: 8px 0; padding: 8px; border-radius: 8px; }
-.user { background: #00ff88; color: black; text-align: right; }
-.ai { background: #222; color: #00ff88; text-align: left; }
-input, button, select { padding: 12px; margin: 5px; border-radius: 8px; border: none; font-size: 16px; }
-input { width: 60%; background: #222; color: white; }
-button { background: #00ff88; color: black; font-weight: bold; }
-h1 { color: #00ff88; text-align: center; }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+    body { background: linear-gradient(to bottom, #EF7D00, #FFFFFF); height: 100vh; display: flex; justify-content: center; align-items: center; }
+  .container { width: 100%; max-width: 500px; height: 95vh; background: white; border-radius: 15px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+    
+  .header { background: #009E60; color: white; padding: 15px; text-align: center; }
+  .header h1 { font-size: 24px; font-weight: bold; }
+  .header p { font-size: 12px; margin-top: 4px; opacity: 0.9; }
+    
+  .chat { flex: 1; overflow-y: auto; padding: 20px; background: #f5f5f5; }
+  .msg { margin-bottom: 15px; display: flex; }
+  .user { justify-content: flex-end; }
+  .ai { justify-content: flex-start; }
+  .bubble { max-width: 80%; padding: 12px 16px; border-radius: 18px; line-height: 1.5; font-size: 15px; }
+  .user.bubble { background: #009E60; color: white; border-bottom-right-radius: 4px; }
+  .ai.bubble { background: white; color: black; border: 1px solid #ddd; border-bottom-left-radius: 4px; }
+    
+  .input-area { padding: 15px; background: white; border-top: 1px solid #ddd; display: flex; gap: 10px; }
+  .input-area input { flex: 1; padding: 12px 16px; border: 1px solid #ccc; border-radius: 25px; outline: none; font-size: 15px; }
+  .input-area button { background: #009E60; color: white; border: none; padding: 12px 20px; border-radius: 25px; font-weight: bold; cursor: pointer; }
 </style>
 </head>
 <body>
-<h1>SafetyDrive AI Co-Pilot</h1>
 
-<select id="lang" onchange="setLanguage()">
-<option value="en-ZM">English</option>
-<option value="ny-ZM">Nyanja</option>
-<option value="bem-ZM">Bemba</option>
-</select>
+<div class="container">
+    <div class="header">
+        <h1>🇿🇲 ZAMBIA AI</h1>
+        <p>Your AI Assistant from Zambia | Powered by OpenRouter</p>
+    </div>
 
-<video id="video" autoplay playsinline></video>
-<div id="chat"></div>
+    <div class="chat" id="chatBox">
+        <div class="msg ai">
+            <div class="bubble">Hello! I am Zambia AI. Ask me anything about farming, business, or school.</div>
+        </div>
+    </div>
 
-<input type="text" id="userInput" placeholder="Ask me anything...">
-<button onclick="sendMessage()">Send</button>
-<button onclick="startVoice()">Talk</button>
-<button onclick="seatbeltReminder()">Seatbelt</button>
+    <div class="input-area">
+        <input type="text" id="userInput" placeholder="Ask Zambia AI...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
 
 <script>
-let currentLang = "en-ZM";
+const API_KEY = "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";
 
-// CAMERA
-navigator.mediaDevices.getUserMedia({video: {facingMode: "user"}})
-.then(stream => { document.getElementById('video').srcObject = stream; })
-.catch(err => { document.getElementById('chat').innerHTML = "Camera Error: " + err });
-
-// SET LANGUAGE
-function setLanguage() {
-  currentLang = document.getElementById('lang').value;
+function addMessage(text, sender) {
+    const box = document.getElementById('chatBox');
+    box.innerHTML += `<div class="msg ${sender}"><div class="bubble">${text}</div></div>`;
+    box.scrollTop = box.scrollHeight;
 }
 
-// SPEAK FUNCTION
-function speak(text) {
-  const msg = new SpeechSynthesisUtterance(text);
-  msg.lang = currentLang;
-  msg.rate = 0.9;
-  speechSynthesis.speak(msg);
-  addMessage("AI", text);
-}
+async function sendMessage() {
+    const input = document.getElementById('userInput');
+    const message = input.value.trim();
+    if (!message) return;
+    
+    addMessage(message, 'user');
+    input.value = "";
+    addMessage("Thinking...", 'ai');
 
-// CHAT DISPLAY
-function addMessage(sender, text) {
-  const chat = document.getElementById('chat');
-  chat.innerHTML += `<div class="msg ${sender === 'You'? 'user' : 'ai'}"><b>${sender}:</b> ${text}</div>`;
-  chat.scrollTop = chat.scrollHeight;
-}
-
-// SEATBELT REMINDER
-function seatbeltReminder() {
-  const texts = {
-    "en-ZM": "Please wear your seatbelt for your safety",
-    "ny-ZM": "Chonde valani lamba wa chitetezo chanu",
-    "bem-ZM": "Nshilomba ufwele umukoba wakulwisha"
-  }
-  speak(texts);
-}
-
-// VOICE TO VOICE
-function startVoice() {
-  const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-  recognition.lang = currentLang;
-  recognition.start();
-  recognition.onresult = (event) => {
-    const question = event.results[0][0].transcript;
-    sendMessage(question);
-  }
-}
-
-// TEXT CHAT AI
-function sendMessage(text) {
-  const input = document.getElementById('userInput');
-  const question = text || input.value;
-  if(!question) return;
-  addMessage("You", question);
-  input.value = "";
-  
-  // SIMPLE AI RESPONSES
-  const responses = {
-    "en-ZM": {
-      "hello": "Hello driver. Drive safely today",
-      "tired": "Take a break. Pull over and rest for 10 minutes",
-      "speed": "Remember to follow the speed limit",
-      "seatbelt": "Please wear your seatbelt for your safety"
-    },
-    "ny-ZM": {
-      "hello": "Moni woyendetsa. Yendetsani mosamala lero",
-      "tired": "Pumulani. Imani ndi kupuma mphindi 10",
-      "seatbelt": "Chonde valani lamba wa chitetezo chanu"
-    },
-    "bem-ZM": {
-      "hello": "Shani umwendeshi. Enda bwino lelo",
-      "tired": "Pumula. Imika ufweme iminuti 10",
-      "seatbelt": "Nshilomba ufwele umukoba wakulwisha"
+    try {
+        const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json", 
+                "Authorization": "Bearer " + API_KEY,
+                "HTTP-Referer": "https://simwingachristopher0-ship-it.github.io/Safety-Drive-AI/",
+                "X-Title": "Zambia AI"
+            },
+            body: JSON.stringify({
+                model: "deepseek/deepseek-r1:free",
+                messages: [
+                    {role: "system", content: "You are Zambia AI. Help with farming, business, and education in Zambia. Answer clearly."},
+                    {role: "user", content: message}
+                ],
+            })
+        });
+        const data = await res.json();
+        const bubbles = document.querySelectorAll('.ai.bubble');
+        bubbles[bubbles.length-1].innerText = data.choices[0].message.content;
+        
+    } catch(e) {
+        const bubbles = document.querySelectorAll('.ai.bubble');
+        bubbles[bubbles.length-1].innerText = "Error: " + e.message;
     }
-  }
-  
-  let reply = "I am here to help you drive safely. Ask me about tiredness, speed, or seatbelt";
-  let langResponses = responses;
-  for(let key in langResponses){
-    if(question.toLowerCase().includes(key)) {
-      reply = langResponses;
-      break;
-    }
-  }
-  
-  setTimeout(() => speak(reply), 500);
 }
 
-// AUTO SEATBELT REMINDER EVERY 2 MINUTES
-setInterval(seatbeltReminder, 120000);
+document.getElementById('userInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') sendMessage();
+});
 </script>
 </body>
 </html>
