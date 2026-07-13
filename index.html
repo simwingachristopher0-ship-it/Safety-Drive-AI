@@ -7,18 +7,23 @@
 <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
   body { background: #131314; color: #e3e3e3; height: 100vh; display: flex; flex-direction: column; }
+  
   header { padding: 16px; border-bottom: 1px solid #2d2d2d; text-align: center; }
-  header h1 { color: #8ab4f8; font-size: 20px; }
+  header h1 { color: #8ab4f8; font-size: 20px; font-weight: 500; }
+  
  .tools { display: flex; gap: 10px; padding: 10px; justify-content: center; background: #1e1f20; }
- .tool-btn { background: #3c4043; color: #e3e3e3; border: none; padding: 8px 16px; border-radius: 16px; cursor: pointer; }
+.tool-btn { background: #3c4043; color: #e3e3e3; border: none; padding: 8px 16px; border-radius: 16px; cursor: pointer; }
+.tool-btn:hover { background: #5f6368; }
+
   #chat-box { flex: 1; overflow-y: auto; padding: 20px; }
- .msg { display: flex; gap: 12px; margin-bottom: 20px; max-width: 800px; margin: 0 auto 20px auto; }
- .avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; }
- .user.avatar { background: #8ab4f8; color: #131314; }
- .ai.avatar { background: #00ff88; color: #131314; }
- .bubble { flex: 1; line-height: 1.6; font-size: 15px; }
- .input-area { padding: 16px; border-top: 1px solid #2d2d2d; }
- .input-wrap { max-width: 800px; margin: 0 auto; display: flex; gap: 10px; background: #1e1f20; border-radius: 24px; padding: 8px 16px; }
+.msg { display: flex; gap: 12px; margin-bottom: 20px; max-width: 800px; margin-left: auto; margin-right: auto; }
+.avatar { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; }
+.user.avatar { background: #8ab4f8; color: #131314; }
+.ai.avatar { background: #00ff88; color: #131314; }
+.bubble { flex: 1; line-height: 1.6; font-size: 15px; }
+
+.input-area { padding: 16px; border-top: 1px solid #2d2d2d; }
+.input-wrap { max-width: 800px; margin: 0 auto; display: flex; gap: 10px; background: #1e1f20; border-radius: 24px; padding: 8px 16px; }
   #input-box { flex: 1; background: transparent; border: none; color: #e3e3e3; font-size: 15px; outline: none; }
   #send-btn { background: #8ab4f8; color: #131314; border: none; border-radius: 20px; padding: 8px 20px; font-weight: bold; cursor: pointer; }
   #status { text-align: center; color: #9aa0a6; font-size: 12px; margin-top: 8px; }
@@ -38,7 +43,7 @@
 <div id="chat-box">
   <div class="msg ai">
     <div class="avatar">AI</div>
-    <div class="bubble">Hello. I am SafetyDrive. Ask me anything.</div>
+    <div class="bubble">Hello. I am SafetyDrive. I can chat, give weather, and news. What do you need?</div>
   </div>
 </div>
 
@@ -47,13 +52,14 @@
     <input type="text" id="input-box" placeholder="Ask me anything">
     <button id="send-btn">Send</button>
   </div>
-  <p id="status">Powered by Groq</p>
+  <p id="status">Powered by Groq + APIs</p>
 </div>
 
 <script>
+// PUT YOUR KEYS HERE
 const GROQ_API_KEY = "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";
-const WEATHER_API_KEY = ""; // optional: get from openweathermap.org
-const NEWS_API_KEY = ""; // optional: get from newsapi.org
+const WEATHER_API_KEY = "PASTE_YOUR_OPENWEATHER_KEY_HERE"; // get free at openweathermap.org
+const NEWS_API_KEY = "PASTE_YOUR_NEWSAPI_KEY_HERE"; // get free at newsapi.org
 
 const chatBox = document.getElementById('chat-box');
 const inputBox = document.getElementById('input-box');
@@ -63,11 +69,22 @@ const statusText = document.getElementById('status');
 function addMessage(sender, text) {
     const msgDiv = document.createElement('div');
     msgDiv.className = 'msg ' + (sender === 'You'? 'user' : 'ai');
-    msgDiv.innerHTML = '<div class="avatar">' + (sender === 'You'? 'Y' : 'AI') + '</div><div class="bubble">' + text + '</div>';
+    
+    const avatar = document.createElement('div');
+    avatar.className = 'avatar';
+    avatar.innerText = sender === 'You'? 'Y' : 'AI';
+    
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+    bubble.innerText = text;
+    
+    msgDiv.appendChild(avatar);
+    msgDiv.appendChild(bubble);
     chatBox.appendChild(msgDiv);
     chatBox.scrollTop = chatBox.scrollHeight;
 }
 
+// AI CHAT WITH GROQ
 async function askGroq(userText) {
     sendBtn.disabled = true;
     statusText.innerText = "SafetyDrive is thinking...";
@@ -84,42 +101,64 @@ async function askGroq(userText) {
             body: JSON.stringify({
                 model: "llama-3.1-8b-instant",
                 messages: [
-                    {role: "system", content: "You are SafetyDrive, a helpful AI co-pilot for drivers. Keep answers short and safe."},
+                    {role: "system", content: "You are SafetyDrive, a helpful AI co-pilot for drivers. Be concise and helpful."},
                     {role: "user", content: userText}
                 ]
             })
         });
         const data = await response.json();
-        addMessage('AI', data.choices[0].message.content);
+        const aiReply = data.choices[0].message.content;
+        statusText.innerText = "Powered by Groq + APIs";
+        addMessage('AI', aiReply);
     } catch (error) {
-        addMessage('AI', "Error connecting. Check internet.");
+        addMessage('AI', "Error connecting to AI. Check internet.");
     }
-    statusText.innerText = "Powered by Groq";
     sendBtn.disabled = false;
 }
 
+// WEATHER API
 async function getWeather() {
-    if(WEATHER_API_KEY === "") { addMessage('AI', "Add Weather API key first at openweathermap.org"); return; }
+    statusText.innerText = "Getting weather...";
     addMessage('You', "Get weather for Lusaka");
-    const res = await fetch("https://api.openweathermap.org/data/2.5/weather?q=Lusaka&units=metric&appid=" + WEATHER_API_KEY);
-    const data = await res.json();
-    addMessage('AI', "Weather in " + data.name + ": " + data.main.temp + "C, " + data.weather[0].description);
+    try {
+        const res = await fetch("https://api.openweathermap.org/data/2.5/weather?q=Lusaka&units=metric&appid=" + WEATHER_API_KEY);
+        const data = await res.json();
+        const reply = "Weather in " + data.name + ": " + data.main.temp + "C, " + data.weather[0].description;
+        addMessage('AI', reply);
+    } catch {
+        addMessage('AI', "Could not get weather. Check your Weather API key.");
+    }
+    statusText.innerText = "Powered by Groq + APIs";
 }
 
+// NEWS API
 async function getNews() {
-    if(NEWS_API_KEY === "") { addMessage('AI', "Add News API key first at newsapi.org"); return; }
+    statusText.innerText = "Getting news...";
     addMessage('You', "Get latest news");
-    const res = await fetch("https://newsapi.org/v2/top-headlines?country=zm&pageSize=3&apiKey=" + NEWS_API_KEY);
-    const data = await res.json();
-    let reply = "Top news: ";
-    data.articles.forEach((a, i) => { reply += (i+1) + ". " + a.title + ". " });
-    addMessage('AI', reply);
+    try {
+        const res = await fetch("https://newsapi.org/v2/top-headlines?country=zm&pageSize=3&apiKey=" + NEWS_API_KEY);
+        const data = await res.json();
+        let reply = "Top news: ";
+        data.articles.forEach((a, i) => { reply += (i+1) + ". " + a.title + ". " });
+        addMessage('AI', reply);
+    } catch {
+        addMessage('AI', "Could not get news. Check your News API key.");
+    }
+    statusText.innerText = "Powered by Groq + APIs";
 }
 
 sendBtn.addEventListener('click', () => {
-    if(inputBox.value.trim()!== "") askGroq(inputBox.value);
+    if(inputBox.value.trim()!== "") {
+        askGroq(inputBox.value);
+    }
 });
-inputBox.addEventListener("keypress", (e) => { if (e.key === "Enter") sendBtn.click(); });
+
+inputBox.addEventListener("keypress", function(event) {
+    if (event.key === "Enter" &&!sendBtn.disabled) {
+        sendBtn.click();
+    }
+});
 </script>
+
 </body>
 </html>
