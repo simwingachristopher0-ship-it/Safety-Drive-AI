@@ -3,169 +3,117 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SafetyDrive</title>
+<title>Zambia AI 🇿🇲</title>
 <style>
-  :root {
-    --bg: #131314; --bg2: #1e1f20; --text: #e3e3e3; --sub: #9aa0a6;
-    --accent: #8ab4f8; --border: #2d2d2d; --hover: #2d2d2d;
-  }
-  body.light {
-    --bg: #ffffff; --bg2: #f8f9fa; --text: #202124; --sub: #5f6368;
-    --accent: #1a73e8; --border: #dadce0; --hover: #f1f3f4;
-  }
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Google Sans', Arial, sans-serif; }
-  body { background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    body { background: linear-gradient(135deg, #009E60 0%, #EF7D00 50%, #000 100%); height: 100vh; display: flex; justify-content: center; align-items: center; }
+   .container { width: 90%; max-width: 700px; height: 90vh; background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); display: flex; flex-direction: column; overflow: hidden; }
 
-  header { padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
-  header.left { display: flex; align-items: center; gap: 12px; }
-  header h1 { font-size: 20px; font-weight: 400; }
- .theme-btn { background: var(--bg2); border: 1px solid var(--border); padding: 8px 16px; border-radius: 20px; color: var(--text); cursor: pointer; font-size: 14px; }
- .theme-btn:hover { background: var(--hover); }
+   .header { background: #009E60; color: white; padding: 20px; text-align: center; }
+   .header h1 { font-size: 24px; }
+   .header p { font-size: 12px; opacity: 0.9; }
 
- .chat-container { flex: 1; overflow-y: auto; padding: 24px 0; }
- .message { max-width: 768px; margin: 0 auto; padding: 0 24px 24px 24px; display: flex; gap: 16px; }
- .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--accent); color: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 500; flex-shrink: 0; }
- .ai.avatar { background: #a8c7fa; }
- .content { flex: 1; line-height: 1.6; font-size: 15px; padding-top: 4px; }
- .image-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; margin-top: 12px; }
- .image-gallery img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 12px; }
+   .chat-box { flex: 1; padding: 20px; overflow-y: auto; background: #f5f5f5; }
+   .message { margin-bottom: 15px; display: flex; }
+   .message.user { justify-content: flex-end; }
+   .bubble { max-width: 75%; padding: 12px 16px; border-radius: 18px; line-height: 1.5; }
+   .user.bubble { background: #EF7D00; color: white; border-bottom-right-radius: 4px; }
+   .ai.bubble { background: white; color: #333; border: 1px solid #ddd; border-bottom-left-radius: 4px; }
 
- .input-container { padding: 0 24px 24px 24px; }
- .input-wrapper { max-width: 768px; margin: 0 auto; background: var(--bg2); border: 1px solid var(--border); border-radius: 28px; display: flex; align-items: center; padding: 4px 8px 4px 20px; }
- .input-wrapper:focus-within { border-color: var(--accent); }
-  #prompt { flex: 1; background: transparent; border: none; color: var(--text); font-size: 15px; outline: none; padding: 12px 0; }
- .icon-btn { background: none; border: none; color: var(--sub); cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
- .icon-btn:hover { background: var(--hover); }
-  #send { background: var(--accent); color: var(--bg); border-radius: 20px; padding: 8px 20px; font-weight: 500; margin-left: 8px; }
-  #send:disabled { opacity: 0.5; cursor: not-allowed; }
+   .input-area { display: flex; padding: 15px; border-top: 1px solid #ddd; background: white; }
+   .input-area input { flex: 1; padding: 12px; border: 1px solid #ccc; border-radius: 25px; outline: none; font-size: 15px; }
+   .input-area button { margin-left: 10px; padding: 12px 20px; background: #009E60; color: white; border: none; border-radius: 25px; cursor: pointer; font-weight: bold; }
+   .input-area button:hover { background: #007a4d; }
+   .loading { font-style: italic; opacity: 0.7; }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="left">
-    <h1>SafetyDrive</h1>
-  </div>
-  <button class="theme-btn" onclick="document.body.classList.toggle('light')">Theme</button>
-</header>
-
-<div class="chat-container" id="chat">
-  <div class="message ai">
-    <div class="avatar">AI</div>
-    <div class="content">
-      Hello Christopher<br><br>
-      I am SafetyDrive, your AI co-pilot.
-      I only speak when you say "speak" in your message.
-      <br><br>You can upload multiple images and ask me anything about driving and safety.
+<div class="container">
+    <div class="header">
+        <h1>🇿🇲 ZAMBIA AI</h1>
+        <p>Your AI Assistant from Zambia | Powered by Groq</p>
     </div>
-  </div>
-</div>
 
-<div class="input-container">
-  <div class="input-wrapper">
-    <button class="icon-btn" onclick="document.getElementById('fileInput').click()">Attach</button>
-    <input type="file" id="fileInput" multiple accept="image/*" style="display:none">
-    <input type="text" id="prompt" placeholder="Message SafetyDrive">
-    <button class="icon-btn" id="micBtn">Mic</button>
-    <button id="send">Send</button>
-  </div>
+    <div class="chat-box" id="chatBox">
+        <div class="message ai">
+            <div class="bubble">
+                Moni! Hello! I am Zambia AI 🇿🇲<br>
+                Ask me anything in English, Nyanja, or Bemba.
+            </div>
+        </div>
+    </div>
+
+    <div class="input-area">
+        <input type="text" id="userInput" placeholder="Ask Zambia AI..." onkeypress="if(event.key==='Enter') sendMessage()">
+        <button onclick="sendMessage()">Send</button>
+    </div>
 </div>
 
 <script>
-const API_KEY = "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";
-let images = [];
-let shouldSpeak = false;
-const chat = document.getElementById('chat');
-const prompt = document.getElementById('prompt');
+    const API_KEY = "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";
+    const API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
-// MULTI IMAGE UPLOAD - UNLIMITED
-document.getElementById('fileInput').onchange = (e) => {
-  images = [];
-  const files = Array.from(e.target.files);
-  files.forEach(file => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      images.push(reader.result);
-      if(images.length === files.length) {
-        addMessage('user', `${files.length} image${files.length>1?'s':''} attached`, images);
-      }
+    let chatHistory = [
+        {
+            role: "system",
+            content: "You are Zambia AI 🇿🇲 An AI assistant built in Zambia. Be helpful, friendly, and accurate. Reply in the same language as the user: English, Nyanja, or Bemba. Use Zambian examples when possible."
+        }
+    ];
+
+    const chatBox = document.getElementById('chatBox');
+    const userInput = document.getElementById('userInput');
+
+    function addMessage(text, sender) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `message ${sender}`;
+        msgDiv.innerHTML = `<div class="bubble">${text.replace(/\n/g, '<br>')}</div>`;
+        chatBox.appendChild(msgDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
     }
-    reader.readAsDataURL(file);
-  });
-}
 
-// VOICE INPUT
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-if(SpeechRecognition) {
-  const rec = new SpeechRecognition();
-  document.getElementById('micBtn').onclick = () => rec.start();
-  rec.onresult = (e) => {
-    const text = e.results[0][0].transcript;
-    prompt.value = text;
-    if(text.toLowerCase().includes('speak')) shouldSpeak = true;
-    sendMessage(text);
-  }
-}
+    async function sendMessage() {
+        const message = userInput.value.trim();
+        if (!message) return;
 
-function addMessage(role, text, imgArr = []) {
-  const msg = document.createElement('div');
-  msg.className = `message ${role}`;
+        addMessage(message, 'user');
+        chatHistory.push({ role: "user", content: message });
+        userInput.value = "";
 
-  let imagesHtml = '';
-  if(imgArr.length) {
-    imagesHtml = '<div class="image-gallery">';
-    imgArr.forEach(src => imagesHtml += `<img src="${src}">`);
-    imagesHtml += '</div>';
-  }
+        addMessage('<span class="loading">Zambia AI is thinking...</span>', 'ai');
 
-  msg.innerHTML = `
-    <div class="avatar">${role === 'user'? 'C' : 'AI'}</div>
-    <div class="content">${text}${imagesHtml}</div>
-  `;
-  chat.appendChild(msg);
-  chat.scrollTop = chat.scrollHeight;
+        try {
+            const response = await fetch(API_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${API_KEY}`
+                },
+                body: JSON.stringify({
+                    model: "llama-3.1-70b-versatile",
+                    messages: chatHistory,
+                    temperature: 0.7,
+                    max_tokens: 1024
+                })
+            });
 
-  // ONLY SPEAK WHEN ASKED
-  if(role === 'ai' && shouldSpeak) {
-    speechSynthesis.speak(new SpeechSynthesisUtterance(text));
-    shouldSpeak = false;
-  }
-}
+            const data = await response.json();
+            document.querySelector('.loading').parentElement.parentElement.remove(); // remove loading
 
-async function sendMessage(text) {
-  if(!text.trim() && images.length === 0) return;
+            if (data.choices && data.choices[0]) {
+                const aiReply = data.choices[0].message.content;
+                addMessage(aiReply, 'ai');
+                chatHistory.push({ role: "assistant", content: aiReply });
+            } else {
+                addMessage("Sorry, I couldn't get a response. Please try again.", 'ai');
+            }
 
-  if(images.length === 0) addMessage('user', text);
-  prompt.value = '';
-  document.getElementById('send').disabled = true;
-
-  let userPrompt = text;
-  if(images.length > 0) userPrompt += ` [${images.length} images attached for analysis]`;
-
-  try {
-    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: { "Authorization": "Bearer " + API_KEY, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "llama-3.1-8b-instant",
-        messages: [
-          { role: "system", content: "You are SafetyDrive, an AI assistant for Christopher. Be helpful, accurate, and clear. Format answers nicely with line breaks." },
-          { role: "user", content: userPrompt }
-        ]
-      })
-    });
-    const data = await res.json();
-    addMessage('ai', data.choices[0].message.content);
-  } catch(err) {
-    addMessage('ai', 'Sorry, I could not connect. Check your internet.');
-  }
-
-  document.getElementById('send').disabled = false;
-  images = [];
-}
-
-document.getElementById('send').onclick = () => sendMessage(prompt.value);
-prompt.addEventListener('keypress', (e) => { if(e.key === 'Enter') sendMessage(prompt.value); });
+        } catch (error) {
+            document.querySelector('.loading').parentElement.parentElement.remove();
+            addMessage("Error: " + error.message, 'ai');
+        }
+    }
 </script>
+
 </body>
 </html>
